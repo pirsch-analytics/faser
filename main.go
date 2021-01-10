@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/emvi/logbuch"
 	"github.com/gorilla/mux"
+	"github.com/pirsch-analytics/faser/db"
 	"github.com/pirsch-analytics/faser/favicon"
 	"github.com/pirsch-analytics/faser/server"
 	"net/http"
@@ -57,8 +58,12 @@ func startServer(handler http.Handler, shutdown func()) {
 func main() {
 	server.LoadConfig()
 	server.ConfigureLogging()
+	db.Migrate()
+	db.Connect()
 	router := mux.NewRouter()
 	router.HandleFunc("/{url}", favicon.ServeFavicon)
 	cors := server.ConfigureCors(router)
-	startServer(cors, nil)
+	startServer(cors, func() {
+		db.Disconnect()
+	})
 }
