@@ -13,6 +13,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -58,6 +59,11 @@ func lookupIndex(hostname string) (string, error) {
 	}
 
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
 	doc, err := html.Parse(resp.Body)
 
 	if err != nil {
@@ -76,13 +82,10 @@ func lookupIndex(hostname string) (string, error) {
 		return "", errors.New("error finding link nodes")
 	}
 
-	// TODO select by preferred size
-	for _, icon := range icons {
-		href := getHref(&icon)
+	href := getHref(findLargestIconNode(icons))
 
-		if href != "" {
-			return href, nil
-		}
+	if href != "" {
+		return href, nil
 	}
 
 	return "", errors.New("error finding href attribute")
@@ -128,6 +131,49 @@ func hasRelAttribute(node *html.Node) bool {
 	return false
 }
 
+func findLargestIconNode(nodes []html.Node) *html.Node {
+	width := 0
+	var largest *html.Node
+
+	for _, n := range nodes {
+		w := getSizesWidth(&n)
+
+		if w >= width {
+			width = w
+			largest = &n
+		}
+	}
+
+	return largest
+}
+
+func getSizesWidth(node *html.Node) int {
+	for _, attr := range node.Attr {
+		if strings.ToLower(attr.Key) == "sizes" && attr.Val != "" {
+			val := strings.ToLower(attr.Val)
+			sizes := strings.Split(val, " ")
+
+			if len(sizes) > 0 {
+				dimension := strings.Split(sizes[len(sizes)-1], "x")
+
+				if len(dimension) == 2 {
+					width, err := strconv.Atoi(dimension[1])
+
+					if err != nil {
+						return 0
+					}
+
+					return width
+				}
+			}
+
+			return 0
+		}
+	}
+
+	return 0
+}
+
 func getHref(node *html.Node) string {
 	for _, attr := range node.Attr {
 		if strings.ToLower(attr.Key) == "href" {
@@ -162,6 +208,8 @@ func downloadIcon(rawurl, hostname string) (string, error) {
 	}
 
 	filename := getFaviconFilename(rawurl)
+	ext := path.Ext(filename)
+	filename = "favicon" + ext
 	p := filepath.Join(filesDir, hostname, filename)
 
 	if err := ioutil.WriteFile(p, file, 0644); err != nil {

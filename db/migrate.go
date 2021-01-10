@@ -39,7 +39,7 @@ func Migrate() {
 }
 
 func postgresConnectionString() string {
-	cfg := server.Get().DB
+	cfg := server.Config().DB
 	return fmt.Sprintf(migrateConnectionString, cfg.Host, cfg.Port, cfg.Schema, cfg.User, cfg.Password,
 		cfg.SSLMode, cfg.SSLCert, cfg.SSLKey, cfg.SSLRootCert)
 }

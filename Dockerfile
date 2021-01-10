@@ -7,7 +7,8 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" /go/src/faser/main.go && \
 	mkdir /app && \
 	mv /go/src/faser/main /app/server && \
-	mv /go/src/faser/schema /app/schema
+	mv /go/src/faser/schema /app/schema && \
+	mv /go/src/faser/default.svg /app/default.svg
 
 FROM alpine
 RUN apk update && \
@@ -24,5 +25,5 @@ RUN addgroup -S appuser && \
 USER appuser
 
 EXPOSE 8080
-VOLUME ["/app/files"]
+VOLUME ["/app/files", "/app/default.svg"]
 ENTRYPOINT ["/app/server"]

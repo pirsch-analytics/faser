@@ -29,7 +29,7 @@ type connection struct {
 }
 
 func newConnection() *connection {
-	logbuch.Info("Connecting to database...", logbuch.Fields{"ssl_mode": server.Get().DB.SSLMode})
+	logbuch.Info("Connecting to database...", logbuch.Fields{"ssl_mode": server.Config().DB.SSLMode})
 	db, err := sqlx.Connect("postgres", postgresConnection())
 
 	if err != nil {
@@ -43,7 +43,7 @@ func newConnection() *connection {
 	}
 
 	logbuch.Info("Connected")
-	setMaxOpenConnections(db, server.Get().DB.MaxOpenConnections)
+	setMaxOpenConnections(db, server.Config().DB.MaxOpenConnections)
 	return &connection{DB: *db}
 }
 
@@ -58,7 +58,7 @@ func (connection *connection) disconnect() {
 }
 
 func postgresConnection() string {
-	data := server.Get().DB
+	data := server.Config().DB
 	return fmt.Sprintf(connectionString, data.Host, data.Port, data.User, data.Password, data.Schema,
 		data.SSLMode, data.SSLCert, data.SSLKey, data.SSLRootCert, connectTimeout, "UTC")
 }
