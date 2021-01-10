@@ -22,6 +22,8 @@ func downloadFavicon(domain *db.Domain, hostname string) *db.Domain {
 		domain = &db.Domain{
 			Hostname: hostname,
 		}
+	} else {
+		cleanUpFiles(hostname)
 	}
 
 	// lookup index.html (or whatever html is served) first
@@ -49,6 +51,17 @@ func downloadFavicon(domain *db.Domain, hostname string) *db.Domain {
 	domain.Filename = sql.NullString{String: file, Valid: file != ""}
 	db.SaveDomain(nil, domain)
 	return domain
+}
+
+func cleanUpFiles(hostname string) {
+	logbuch.Debug("Cleaning up files", logbuch.Fields{"hostname": hostname})
+
+	if err := os.RemoveAll(filepath.Join(filesDir, hostname)); err != nil {
+		logbuch.Error("Error deleting directory for host", logbuch.Fields{
+			"err":      err,
+			"hostname": hostname,
+		})
+	}
 }
 
 func lookupIndex(hostname string) (string, error) {
