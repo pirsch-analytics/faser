@@ -11,4 +11,5 @@ require (
 	github.com/lib/pq v1.8.0
 	github.com/rs/cors v1.7.0
 	github.com/speps/go-hashids v2.0.0+incompatible // indirect
+	golang.org/x/net v0.0.0-20201224014010-6772e930b67b
 )

@@ -10,6 +10,7 @@ var cfg *config
 
 type config struct {
 	LogLevel string
+	Cache    int
 	Cors     corsConfig
 	Server   serverConfig
 	DB       postgresConfig
@@ -44,9 +45,14 @@ type postgresConfig struct {
 
 // LoadConfig loadsd the configuration from environment variables.
 func LoadConfig() {
+	cache, _ := strconv.Atoi(os.Getenv("FASER_CACHE"))
 	writeTimeout, _ := strconv.Atoi(os.Getenv("FASER_SERVER_WRITE_TIMEOUT"))
 	readTimeout, _ := strconv.Atoi(os.Getenv("FASER_SERVER_READ_TIMEOUT"))
 	dbMaxOpenConnections, _ := strconv.Atoi(os.Getenv("FASER_DB_MAX_OPEN_CONNECTIONS"))
+
+	if cache <= 0 {
+		cache = 3600 * 24 * 7 // one week in seconds
+	}
 
 	if writeTimeout <= 0 {
 		writeTimeout = 5
@@ -58,6 +64,7 @@ func LoadConfig() {
 
 	cfg = &config{
 		LogLevel: strings.ToLower(os.Getenv("FASER_LOG_LEVEL")),
+		Cache:    cache,
 		Cors: corsConfig{
 			LogLevel: strings.ToLower(os.Getenv("FASER_CORS_LOG_LEVEL")),
 			Origins:  os.Getenv("FASER_CORS_ORIGINS"),

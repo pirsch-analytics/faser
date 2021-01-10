@@ -1,42 +1,32 @@
 package favicon
 
 import (
-	"github.com/emvi/logbuch"
-	"github.com/gorilla/mux"
+	"github.com/pirsch-analytics/faser/db"
+	"github.com/pirsch-analytics/faser/server"
 	"net/http"
-	"net/url"
+	"path/filepath"
+	"time"
 )
 
 func ServeFavicon(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	domain := getDomain(vars["url"])
+	hostname := getHostname(r.URL.Query().Get("url"))
 
-	if domain == "" {
+	if hostname == "" {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	// TODO
-	// 1. look up domain (including max-age)
-	// 2. download favicon if required
-	// 3. serve
-}
+	domain := db.GetDomain(hostname)
+	maxAge := time.Now().UTC().Add(-time.Duration(server.Get().Cache) * time.Second)
 
-func getDomain(rawurl string) string {
-	u, err := url.ParseRequestURI(rawurl)
-
-	if err != nil || u.Host == "" {
-		rawurl = "http://" + rawurl
-		u, err = url.ParseRequestURI(rawurl)
-
-		if err != nil {
-			logbuch.Debug("Error parsing URL", logbuch.Fields{
-				"err": err,
-				"url": rawurl,
-			})
-			return ""
-		}
+	if domain == nil || domain.ModTime.Before(maxAge) {
+		domain = downloadFavicon(domain, hostname)
 	}
 
-	return u.Hostname()
+	if !domain.Filename.Valid {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	http.ServeFile(w, r, filepath.Join(filesDir, hostname, domain.Filename.String))
 }
