@@ -4,6 +4,7 @@ import (
 	"github.com/emvi/logbuch"
 )
 
+// ConfigureLogging configures the logger.
 func ConfigureLogging() {
 	logbuch.SetFormatter(logbuch.NewFieldFormatter("2006-01-02T15:04:05", "\t"))
 

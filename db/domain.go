@@ -6,6 +6,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// Domain represents a single domain entry in the database.
 type Domain struct {
 	BaseEntity
 
@@ -13,6 +14,7 @@ type Domain struct {
 	Filename sql.NullString
 }
 
+// GetDomain returns the domain for given hostname.
 func GetDomain(hostname string) *Domain {
 	query := `SELECT * FROM "domain" WHERE hostname = $1`
 	entity := new(Domain)
@@ -28,6 +30,7 @@ func GetDomain(hostname string) *Domain {
 	return entity
 }
 
+// SaveDomain creates or updates a domain in the database.
 func SaveDomain(tx *sqlx.Tx, entity *Domain) *Domain {
 	pool.SaveEntity(tx, entity, `INSERT INTO "domain" (hostname, filename) VALUES (:hostname, :filename) RETURNING id`,
 		`UPDATE "domain" SET hostname = :hostname, filename = :filename WHERE id = :id`)

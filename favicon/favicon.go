@@ -107,11 +107,11 @@ func lookupIndex(hostname string) (string, error) {
 func findHeadNode(node *html.Node) *html.Node {
 	if node.Type == html.ElementNode && node.Data == "head" {
 		return node
-	} else {
-		for c := node.FirstChild; c != nil; c = c.NextSibling {
-			if n := findHeadNode(c); n != nil {
-				return n
-			}
+	}
+
+	for c := node.FirstChild; c != nil; c = c.NextSibling {
+		if n := findHeadNode(c); n != nil {
+			return n
 		}
 	}
 

@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"github.com/emvi/logbuch"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 	"github.com/pirsch-analytics/faser/server"
+
+	// database driver
+	_ "github.com/lib/pq"
 )
 
 const (

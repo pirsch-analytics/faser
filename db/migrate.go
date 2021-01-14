@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"github.com/emvi/logbuch"
 	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/pirsch-analytics/faser/server"
+
+	// migration database driver
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+
+	// migrate from source files
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 const (
