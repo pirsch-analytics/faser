@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  faser:
+    image: pirsch/faser
+    container_name: faser
+    restart: always
+    ports:
+      - "8080:8080"

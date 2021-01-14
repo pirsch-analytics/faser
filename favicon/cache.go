@@ -3,7 +3,6 @@ package favicon
 import (
 	"github.com/emvi/logbuch"
 	"github.com/pirsch-analytics/faser/server"
-	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -38,8 +37,6 @@ func (c *cache) find(hostname string, size int) string {
 	}
 
 	filename, found := c.get(hostname, size)
-
-	log.Printf("%s -> %s", hostname, filename)
 
 	if !found {
 		filename = downloadFavicon(hostname)
@@ -101,7 +98,7 @@ func (c *cache) clear() {
 	c.favicons = make(map[string]map[int]cacheEntry)
 
 	if err := os.RemoveAll(server.Config().Cache.Dir); err != nil {
-		logbuch.Fatal("Error deleting cache directory", logbuch.Fields{"err": err})
+		logbuch.Error("Error deleting cache directory", logbuch.Fields{"err": err})
 	}
 
 	if err := os.MkdirAll(server.Config().Cache.Dir, 0744); err != nil {
