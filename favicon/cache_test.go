@@ -17,7 +17,7 @@ func TestCacheNotFound(t *testing.T) {
 	}
 	cache.clear()
 
-	if cache.get("example.com") != nil {
+	if domain, _ := cache.get("example.com"); domain != nil {
 		t.Fatal("Domain must not have been found")
 	}
 
@@ -40,7 +40,7 @@ func TestCacheFound(t *testing.T) {
 		Filename: sql.NullString{String: "favicon.png", Valid: true},
 	})
 
-	if cache.get("example.com") == nil {
+	if domain, _ := cache.get("example.com"); domain == nil {
 		t.Fatal("Domain must have been found")
 	}
 
@@ -48,7 +48,7 @@ func TestCacheFound(t *testing.T) {
 		t.Fatalf("Cache must have one entry, but was: %v", len(cache.entries))
 	}
 
-	if cache.get("not-found.com") != nil {
+	if domain, _ := cache.get("not-found.com"); domain != nil {
 		t.Fatal("Domain must not have been found")
 	}
 
@@ -75,22 +75,22 @@ func TestCacheMaxAge(t *testing.T) {
 		Filename: sql.NullString{String: "favicon.png", Valid: true},
 	})
 
-	if cache.get("example.com") == nil {
-		t.Fatal("Domain must have been found")
+	if domain, refresh := cache.get("example.com"); domain == nil || refresh {
+		t.Fatal("Domain must have been found and shouldn't require a refresh")
 	}
 
-	if cache.get("example2.com") == nil {
-		t.Fatal("Domain must have been found")
+	if domain, refresh := cache.get("example2.com"); domain == nil || refresh {
+		t.Fatal("Domain must have been found and shouldn't require a refresh")
 	}
 
 	if len(cache.entries) != 2 {
 		t.Fatalf("Cache must have two entries, but was: %v", len(cache.entries))
 	}
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(1100 * time.Millisecond)
 
-	if cache.get("example.com") != nil {
-		t.Fatal("Domain must not have been found")
+	if domain, refresh := cache.get("example.com"); domain == nil || !refresh {
+		t.Fatal("Domain must have been found and needs to be refreshed")
 	}
 
 	if len(cache.entries) != 1 {
@@ -116,11 +116,11 @@ func TestCacheMaxEntries(t *testing.T) {
 		Filename: sql.NullString{String: "favicon.png", Valid: true},
 	})
 
-	if cache.get("example.com") == nil {
+	if domain, _ := cache.get("example.com"); domain == nil {
 		t.Fatal("Domain must have been found")
 	}
 
-	if cache.get("example2.com") == nil {
+	if domain, _ := cache.get("example2.com"); domain == nil {
 		t.Fatal("Domain must have been found")
 	}
 

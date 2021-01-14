@@ -36,3 +36,16 @@ func SaveDomain(tx *sqlx.Tx, entity *Domain) *Domain {
 		`UPDATE "domain" SET hostname = :hostname, filename = :filename WHERE id = :id`)
 	return entity
 }
+
+// DeleteDomain deletes all domains in the database.
+func DeleteDomain(tx *sqlx.Tx) {
+	if tx == nil {
+		tx = Tx()
+		defer Commit(tx)
+	}
+
+	if _, err := tx.Exec(`DELETE FROM "domain"`); err != nil {
+		Rollback(tx)
+		logbuch.Fatal("Error deleting domains", logbuch.Fields{"err": err})
+	}
+}

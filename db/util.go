@@ -44,3 +44,14 @@ func Exec(tx *sqlx.Tx, query string, args ...interface{}) (sql.Result, error) {
 
 	return result, nil
 }
+
+// Tx creates a new transaction or panics on failure.
+func Tx() *sqlx.Tx {
+	tx, err := pool.Beginx()
+
+	if err != nil {
+		logbuch.Fatal("Error creating transaction", logbuch.Fields{"err": err})
+	}
+
+	return tx
+}

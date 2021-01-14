@@ -24,6 +24,17 @@ RUN addgroup -S appuser && \
     chown -R appuser:appuser /app
 USER appuser
 
+ENV FASER_LOG_LEVEL=info
+ENV FASER_CORS_ORIGINS=*
+ENV FASER_SERVER_HOST=:8080
+ENV FASER_DB_HOST=localhost
+ENV FASER_DB_PORT=5432
+ENV FASER_DB_SCHEMA=faser
+ENV FASER_DB_USER=postgres
+ENV FASER_DB_PASSWORD=postgres
+ENV FASER_DB_SSL_MODE=require
+ENV FASER_DB_MIGRATION_DIR=schema
+
 EXPOSE 8080
 VOLUME ["/app/files", "/app/default.svg"]
 ENTRYPOINT ["/app/server"]

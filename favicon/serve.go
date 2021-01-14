@@ -37,9 +37,9 @@ func ServeFavicon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	domain := cache.get(hostname)
+	domain, refresh := cache.get(hostname)
 
-	if domain == nil {
+	if domain == nil || refresh {
 		domain = downloadFavicon(domain, hostname)
 	}
 

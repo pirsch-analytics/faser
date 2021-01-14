@@ -19,7 +19,7 @@ type domainCache struct {
 	m          sync.RWMutex
 }
 
-func (cache *domainCache) get(hostname string) *db.Domain {
+func (cache *domainCache) get(hostname string) (*db.Domain, bool) {
 	cache.m.RLock()
 
 	if len(cache.entries) >= cache.maxEntries {
@@ -41,24 +41,27 @@ func (cache *domainCache) get(hostname string) *db.Domain {
 		}
 	}
 
+	refresh := false
+
 	if domain != nil {
-		maxAge := time.Now().Add(-time.Duration(cache.maxAge) * time.Second)
+		maxAge := time.Now().UTC().Add(-time.Duration(cache.maxAge) * time.Second)
 
 		if domain.ModTime.Before(maxAge) {
 			cache.m.Lock()
 			delete(cache.entries, hostname)
 			cache.m.Unlock()
-			return nil
+			refresh = true
 		}
 	}
 
-	return domain
+	return domain, refresh
 }
 
 func (cache *domainCache) clear() {
 	cache.m.Lock()
 	defer cache.m.Unlock()
 	cache.entries = make(map[string]*db.Domain)
+	db.DeleteDomain(nil)
 
 	if err := os.RemoveAll(filesDir); err != nil {
 		logbuch.Error("Error deleting files directory while clearing cache", logbuch.Fields{"err": err})
@@ -67,4 +70,6 @@ func (cache *domainCache) clear() {
 	if err := os.MkdirAll(filesDir, 0744); err != nil {
 		logbuch.Fatal("Error recreating files directory while clearing cache", logbuch.Fields{"err": err})
 	}
+
+	logbuch.Debug("Cache cleared")
 }
