@@ -45,7 +45,7 @@ func TestScale(t *testing.T) {
 			copyFile(t, originalPath, targetPath)
 		}
 
-		scaledPath := filepath.Join(filesDir, "hostname", getFilenameForSize(f, 16))
+		scaledPath := filepath.Join("files", "hostname", getFilenameForSize(f, 16))
 
 		if _, err := os.Stat(scaledPath); !os.IsNotExist(err) {
 			if err := os.Remove(scaledPath); err != nil {
@@ -53,8 +53,8 @@ func TestScale(t *testing.T) {
 			}
 		}
 
-		if err := scale("hostname", f, 16); err != nil {
-			t.Fatalf("File must have been rescaled, but was: %v", err)
+		if filename := scale("hostname", f, 16); filename != getFilenameForSize(f, 16) {
+			t.Fatalf("File must have been rescaled, but was: %v", filename)
 		}
 
 		if _, err := os.Stat(scaledPath); err != nil {

@@ -9,13 +9,17 @@ import (
 var cfg *config
 
 type config struct {
-	LogLevel        string
-	CacheMaxAge     int
-	CacheMaxEntries int
-	DefaultFavicon  string
-	Cors            corsConfig
-	Server          serverConfig
-	DB              postgresConfig
+	LogLevel string
+	Cache    cacheConfig
+	Cors     corsConfig
+	Server   serverConfig
+}
+
+type cacheConfig struct {
+	Dir            string
+	MaxAge         int
+	MaxEntries     int
+	DefaultFavicon string
 }
 
 type corsConfig struct {
@@ -32,31 +36,17 @@ type serverConfig struct {
 	TLSKey       string
 }
 
-type postgresConfig struct {
-	Host               string
-	Port               string
-	User               string
-	Password           string
-	Schema             string
-	MaxOpenConnections int
-	MigrationDir       string
-	SSLMode            string
-	SSLCert            string
-	SSLKey             string
-	SSLRootCert        string
-}
-
 // LoadConfig loadsd the configuration from environment variables.
 func LoadConfig() {
+	cacheDir := os.Getenv("FASER_CACHE_DIR")
 	cacheMaxAge, _ := strconv.Atoi(os.Getenv("FASER_CACHE_MAX_AGE"))
 	cacheMaxEntries, _ := strconv.Atoi(os.Getenv("FASER_CACHE_MAX_ENTRIES"))
 	defaultFavicon := os.Getenv("FASER_DEFAULT_FAVICON")
 	writeTimeout, _ := strconv.Atoi(os.Getenv("FASER_SERVER_WRITE_TIMEOUT"))
 	readTimeout, _ := strconv.Atoi(os.Getenv("FASER_SERVER_READ_TIMEOUT"))
-	dbMaxOpenConnections, _ := strconv.Atoi(os.Getenv("FASER_DB_MAX_OPEN_CONNECTIONS"))
 
-	if defaultFavicon == "" {
-		defaultFavicon = "default.svg"
+	if cacheDir == "" {
+		cacheDir = "files"
 	}
 
 	if cacheMaxAge <= 0 {
@@ -65,6 +55,10 @@ func LoadConfig() {
 
 	if cacheMaxEntries <= 0 {
 		cacheMaxEntries = 10_000
+	}
+
+	if defaultFavicon == "" {
+		defaultFavicon = "default.svg"
 	}
 
 	if writeTimeout <= 0 {
@@ -76,9 +70,13 @@ func LoadConfig() {
 	}
 
 	cfg = &config{
-		LogLevel:       strings.ToLower(os.Getenv("FASER_LOG_LEVEL")),
-		CacheMaxAge:    cacheMaxAge,
-		DefaultFavicon: defaultFavicon,
+		LogLevel: strings.ToLower(os.Getenv("FASER_LOG_LEVEL")),
+		Cache: cacheConfig{
+			Dir:            cacheDir,
+			MaxAge:         cacheMaxAge,
+			MaxEntries:     cacheMaxEntries,
+			DefaultFavicon: defaultFavicon,
+		},
 		Cors: corsConfig{
 			LogLevel: strings.ToLower(os.Getenv("FASER_CORS_LOG_LEVEL")),
 			Origins:  os.Getenv("FASER_CORS_ORIGINS"),
@@ -90,19 +88,6 @@ func LoadConfig() {
 			TLS:          strings.ToLower(os.Getenv("FASER_SERVER_TLS")) == "true",
 			TLSCert:      os.Getenv("FASER_SERVER_TLS_CERT"),
 			TLSKey:       os.Getenv("FASER_SERVER_TLS_KEY"),
-		},
-		DB: postgresConfig{
-			Host:               os.Getenv("FASER_DB_HOST"),
-			Port:               os.Getenv("FASER_DB_PORT"),
-			User:               os.Getenv("FASER_DB_USER"),
-			Password:           os.Getenv("FASER_DB_PASSWORD"),
-			Schema:             os.Getenv("FASER_DB_SCHEMA"),
-			MaxOpenConnections: dbMaxOpenConnections,
-			MigrationDir:       os.Getenv("FASER_DB_MIGRATION_DIR"),
-			SSLMode:            os.Getenv("FASER_DB_SSL_MODE"),
-			SSLCert:            os.Getenv("FASER_DB_SSL_CERT"),
-			SSLKey:             os.Getenv("FASER_DB_SSL_KEY"),
-			SSLRootCert:        os.Getenv("FASER_DB_SSL_ROOT_CERT"),
 		},
 	}
 }

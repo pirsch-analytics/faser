@@ -3,12 +3,49 @@ package favicon
 import (
 	"fmt"
 	"github.com/emvi/logbuch"
+	"github.com/pirsch-analytics/faser/server"
 	"os/exec"
 	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
 )
+
+var sizes = []int{
+	16,
+	32,
+	64,
+	96,
+	128,
+	196,
+}
+
+func scale(hostname, filename string, size int) string {
+	dir := server.Config().Cache.Dir
+	srcPath := filepath.Join(dir, hostname, filename)
+	newFilename := getFilenameForSize(filename, size)
+	targetPath := filepath.Join(dir, hostname, newFilename)
+	cmd := exec.Command("magick",
+		"convert",
+		srcPath,
+		"-resize",
+		fmt.Sprintf("%dx%d>", size, size),
+		targetPath)
+	stdout, err := cmd.CombinedOutput()
+
+	if err != nil {
+		logbuch.Error("Error resizing favicon", logbuch.Fields{
+			"err":    err,
+			"src":    srcPath,
+			"target": targetPath,
+			"size":   size,
+			"stdout": string(stdout),
+		})
+		return ""
+	}
+
+	return newFilename
+}
 
 func selectFilenameForSize(filename string, size int) (string, int) {
 	if size <= 0 {
@@ -48,28 +85,4 @@ func getValidSize(size int) int {
 	}
 
 	return size
-}
-
-func scale(hostname, filename string, size int) error {
-	srcPath := filepath.Join(filesDir, hostname, filename)
-	targetPath := filepath.Join(filesDir, hostname, getFilenameForSize(filename, size))
-	cmd := exec.Command("magick",
-		"convert",
-		srcPath,
-		"-resize",
-		fmt.Sprintf("%dx%d>", size, size),
-		targetPath)
-	stdout, err := cmd.CombinedOutput()
-
-	if err != nil {
-		logbuch.Error("Error resizing favicon", logbuch.Fields{
-			"err":    err,
-			"src":    srcPath,
-			"target": targetPath,
-			"size":   size,
-			"stdout": string(stdout),
-		})
-	}
-
-	return nil
 }

@@ -1,11 +1,10 @@
 package favicon
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/emvi/logbuch"
-	"github.com/pirsch-analytics/faser/db"
+	"github.com/pirsch-analytics/faser/server"
 	"golang.org/x/net/html"
 	"io/ioutil"
 	"net/http"
@@ -17,15 +16,7 @@ import (
 	"strings"
 )
 
-func downloadFavicon(domain *db.Domain, hostname string) *db.Domain {
-	if domain == nil {
-		domain = &db.Domain{
-			Hostname: hostname,
-		}
-	} else {
-		cleanUpFiles(hostname)
-	}
-
+func downloadFavicon(hostname string) string {
 	// lookup index.html (or whatever html is served) first
 	iconURL, err := lookupIndex(hostname)
 
@@ -39,7 +30,7 @@ func downloadFavicon(domain *db.Domain, hostname string) *db.Domain {
 		iconURL = filepath.Join(hostname, "favicon.ico")
 	}
 
-	file, err := downloadIcon(iconURL, hostname)
+	filename, err := downloadIcon(iconURL, hostname)
 
 	if err != nil {
 		logbuch.Debug("Error downloading favicon", logbuch.Fields{
@@ -48,15 +39,13 @@ func downloadFavicon(domain *db.Domain, hostname string) *db.Domain {
 		})
 	}
 
-	domain.Filename = sql.NullString{String: file, Valid: file != ""}
-	db.SaveDomain(nil, domain)
-	return domain
+	return filename
 }
 
 func cleanUpFiles(hostname string) {
 	logbuch.Debug("Cleaning up files", logbuch.Fields{"hostname": hostname})
 
-	if err := os.RemoveAll(filepath.Join(filesDir, hostname)); err != nil {
+	if err := os.RemoveAll(filepath.Join(server.Config().Cache.Dir, hostname)); err != nil {
 		logbuch.Error("Error deleting directory for host", logbuch.Fields{
 			"err":      err,
 			"hostname": hostname,
@@ -216,14 +205,16 @@ func downloadIcon(rawurl, hostname string) (string, error) {
 		return "", err
 	}
 
-	if err := os.MkdirAll(filepath.Join(filesDir, hostname), 0744); err != nil {
+	dir := server.Config().Cache.Dir
+
+	if err := os.MkdirAll(filepath.Join(dir, hostname), 0744); err != nil {
 		return "", err
 	}
 
 	filename := getFaviconFilename(rawurl)
 	ext := path.Ext(filename)
 	filename = "favicon" + ext
-	p := filepath.Join(filesDir, hostname, filename)
+	p := filepath.Join(dir, hostname, filename)
 
 	if err := ioutil.WriteFile(p, file, 0644); err != nil {
 		return "", err

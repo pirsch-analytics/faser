@@ -5,21 +5,11 @@ import (
 	"github.com/emvi/logbuch"
 	"github.com/pirsch-analytics/faser/server"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
 )
-
-var sizes = []int{
-	16,
-	32,
-	64,
-	96,
-	128,
-	196,
-}
 
 // ServeFavicon looks up a favicon and serves the file in the desired dimensions if possible or the default icon otherwise.
 func ServeFavicon(w http.ResponseWriter, r *http.Request) {
@@ -37,29 +27,14 @@ func ServeFavicon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	domain, refresh := cache.get(hostname)
+	filename := faviconCache.find(hostname, size)
 
-	if domain == nil || refresh {
-		domain = downloadFavicon(domain, hostname)
-	}
-
-	if !domain.Filename.Valid {
+	if filename == "" {
 		serveDefaultFavicon(w, r)
 		return
 	}
 
-	filename, size := selectFilenameForSize(domain.Filename.String, size)
-	filePath := filepath.Join(filesDir, hostname, filename)
-	_, err = os.Stat(filePath)
-
-	if size != 0 && os.IsNotExist(err) {
-		if err := scale(hostname, filename, size); err != nil {
-			serveDefaultFavicon(w, r)
-			return
-		}
-	}
-
-	http.ServeFile(w, r, filePath)
+	http.ServeFile(w, r, filepath.Join(server.Config().Cache.Dir, hostname, filename))
 }
 
 func sendBadRequest(w http.ResponseWriter, sizeErr bool) {
@@ -88,5 +63,5 @@ func sendBadRequest(w http.ResponseWriter, sizeErr bool) {
 }
 
 func serveDefaultFavicon(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, server.Config().DefaultFavicon)
+	http.ServeFile(w, r, server.Config().Cache.DefaultFavicon)
 }
