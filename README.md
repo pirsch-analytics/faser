@@ -12,10 +12,10 @@ Please see the [docker-compose.yml](docker-compose.yml) for reference. You can s
 | Variable | Description |
 | - | - |
 | FASER_LOG_LEVEL | debug, info, warn |
-| FASER_CACHE_DIR | Sets the favicon cache directory. |
+| FASER_CACHE_DIR | Sets the favicon cache directory. `/app/data/files` inside the container volume. |
 | FASER_CACHE_MAX_AGE | Sets the maximum time a favicon will be cached (in seconds). |
 | FASER_CACHE_MAX_ENTRIES | Sets the maximum number of favicons stored (not including scaled images). |
-| FASER_DEFAULT_FAVICON | Sets the default favicon (set `/app/default/favicon.svg` for the container volume). |
+| FASER_DEFAULT_FAVICON | Sets the default favicon path. `/app/data/favicon.svg` inside the container volume. |
 | FASER_CORS_LOG_LEVEL | debug, info |
 | FASER_CORS_ORIGINS | Sets the allowed origins (`*` by default). |
 | FASER_SERVER_HOST | Sets the host ip:port (`:8080` by default). |
