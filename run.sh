@@ -9,4 +9,5 @@ export FASER_DB_SCHEMA=faser
 export FASER_DB_USER=postgres
 export FASER_DB_PASSWORD=postgres
 export FASER_DB_SSL_MODE=disable
+export FASER_DB_MIGRATION_DIR=schema
 go run main.go

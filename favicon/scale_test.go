@@ -1,6 +1,7 @@
 package favicon
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -25,6 +26,10 @@ func TestSelectFilenameForSize(t *testing.T) {
 }
 
 func TestScale(t *testing.T) {
+	if err := os.MkdirAll("files/hostname", 0744); err != nil {
+		t.Fatal(err)
+	}
+
 	files := []string{
 		"test.gif",
 		"test.ico",
@@ -33,6 +38,13 @@ func TestScale(t *testing.T) {
 	}
 
 	for _, f := range files {
+		originalPath := filepath.Join("test", f)
+		targetPath := filepath.Join("files", "hostname", f)
+
+		if _, err := os.Stat(targetPath); err != nil {
+			copyFile(t, originalPath, targetPath)
+		}
+
 		scaledPath := filepath.Join(filesDir, "hostname", getFilenameForSize(f, 16))
 
 		if _, err := os.Stat(scaledPath); !os.IsNotExist(err) {
@@ -48,5 +60,17 @@ func TestScale(t *testing.T) {
 		if _, err := os.Stat(scaledPath); err != nil {
 			t.Fatalf("Scaled image must exist, but was: %v", err)
 		}
+	}
+}
+
+func copyFile(t *testing.T, src, target string) {
+	data, err := ioutil.ReadFile(src)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := ioutil.WriteFile(target, data, 0744); err != nil {
+		t.Fatal(err)
 	}
 }

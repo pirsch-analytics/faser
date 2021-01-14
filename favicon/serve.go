@@ -3,7 +3,6 @@ package favicon
 import (
 	"encoding/json"
 	"github.com/emvi/logbuch"
-	"github.com/pirsch-analytics/faser/db"
 	"github.com/pirsch-analytics/faser/server"
 	"net/http"
 	"os"
@@ -11,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
-	"time"
 )
 
 var sizes = []int{
@@ -39,10 +37,9 @@ func ServeFavicon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	domain := db.GetDomain(hostname)
-	maxAge := time.Now().UTC().Add(-time.Duration(server.Config().Cache) * time.Second)
+	domain := cache.get(hostname)
 
-	if domain == nil || domain.ModTime.Before(maxAge) {
+	if domain == nil {
 		domain = downloadFavicon(domain, hostname)
 	}
 

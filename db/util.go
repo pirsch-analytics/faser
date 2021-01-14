@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"github.com/emvi/logbuch"
 	"github.com/jmoiron/sqlx"
 )
@@ -24,4 +25,22 @@ func CloseRows(rows *sqlx.Rows) {
 	if err := rows.Close(); err != nil {
 		logbuch.Error("Error closing rows", logbuch.Fields{"err": err})
 	}
+}
+
+// Exec executes a single SQL statement in given transaction or creates a new one if nil.
+// This function should not be used for production code and is intended to be used for tests only.
+func Exec(tx *sqlx.Tx, query string, args ...interface{}) (sql.Result, error) {
+	if tx == nil {
+		tx, _ = pool.Beginx()
+		defer Commit(tx)
+	}
+
+	result, err := tx.Exec(query, args...)
+
+	if err != nil {
+		logbuch.Error("Error executing sql statement", logbuch.Fields{"err": err})
+		return result, err
+	}
+
+	return result, nil
 }

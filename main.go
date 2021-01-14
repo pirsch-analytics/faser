@@ -10,9 +10,9 @@ import (
 func main() {
 	server.LoadConfig()
 	server.ConfigureLogging()
-	favicon.InitFileDir()
 	db.Migrate()
 	db.Connect()
+	favicon.Init()
 	router := mux.NewRouter()
 	router.HandleFunc("/", favicon.ServeFavicon)
 	cors := server.ConfigureCors(router)

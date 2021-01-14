@@ -9,12 +9,13 @@ import (
 var cfg *config
 
 type config struct {
-	LogLevel       string
-	Cache          int
-	DefaultFavicon string
-	Cors           corsConfig
-	Server         serverConfig
-	DB             postgresConfig
+	LogLevel        string
+	CacheMaxAge     int
+	CacheMaxEntries int
+	DefaultFavicon  string
+	Cors            corsConfig
+	Server          serverConfig
+	DB              postgresConfig
 }
 
 type corsConfig struct {
@@ -38,6 +39,7 @@ type postgresConfig struct {
 	Password           string
 	Schema             string
 	MaxOpenConnections int
+	MigrationDir       string
 	SSLMode            string
 	SSLCert            string
 	SSLKey             string
@@ -46,7 +48,8 @@ type postgresConfig struct {
 
 // LoadConfig loadsd the configuration from environment variables.
 func LoadConfig() {
-	cache, _ := strconv.Atoi(os.Getenv("FASER_CACHE"))
+	cacheMaxAge, _ := strconv.Atoi(os.Getenv("FASER_CACHE_MAX_AGE"))
+	cacheMaxEntries, _ := strconv.Atoi(os.Getenv("FASER_CACHE_MAX_ENTRIES"))
 	defaultFavicon := os.Getenv("FASER_DEFAULT_FAVICON")
 	writeTimeout, _ := strconv.Atoi(os.Getenv("FASER_SERVER_WRITE_TIMEOUT"))
 	readTimeout, _ := strconv.Atoi(os.Getenv("FASER_SERVER_READ_TIMEOUT"))
@@ -56,8 +59,12 @@ func LoadConfig() {
 		defaultFavicon = "default.svg"
 	}
 
-	if cache <= 0 {
-		cache = 3600 * 24 * 7 // one week in seconds
+	if cacheMaxAge <= 0 {
+		cacheMaxAge = 3600 * 24 * 7 // one week in seconds
+	}
+
+	if cacheMaxEntries <= 0 {
+		cacheMaxEntries = 10_000
 	}
 
 	if writeTimeout <= 0 {
@@ -70,7 +77,7 @@ func LoadConfig() {
 
 	cfg = &config{
 		LogLevel:       strings.ToLower(os.Getenv("FASER_LOG_LEVEL")),
-		Cache:          cache,
+		CacheMaxAge:    cacheMaxAge,
 		DefaultFavicon: defaultFavicon,
 		Cors: corsConfig{
 			LogLevel: strings.ToLower(os.Getenv("FASER_CORS_LOG_LEVEL")),
@@ -91,6 +98,7 @@ func LoadConfig() {
 			Password:           os.Getenv("FASER_DB_PASSWORD"),
 			Schema:             os.Getenv("FASER_DB_SCHEMA"),
 			MaxOpenConnections: dbMaxOpenConnections,
+			MigrationDir:       os.Getenv("FASER_DB_MIGRATION_DIR"),
 			SSLMode:            os.Getenv("FASER_DB_SSL_MODE"),
 			SSLCert:            os.Getenv("FASER_DB_SSL_CERT"),
 			SSLKey:             os.Getenv("FASER_DB_SSL_KEY"),

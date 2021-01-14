@@ -15,11 +15,11 @@ import (
 
 const (
 	migrateConnectionString = `postgres://%s:%s/%s?user=%s&password=%s&sslmode=%s&sslcert=%s&sslkey=%s&sslrootcert=%s&connect_timeout=60`
-	migrationDir            = "./schema"
 )
 
 // Migrate runs database migrations scripts and panics in case of an error.
 func Migrate() {
+	migrationDir := server.Config().DB.MigrationDir
 	logbuch.Info("Migrating database schema...", logbuch.Fields{"dir": migrationDir})
 	m, err := migrate.New(
 		"file://"+migrationDir,
