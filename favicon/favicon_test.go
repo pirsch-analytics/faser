@@ -2,6 +2,7 @@ package favicon
 
 import (
 	"golang.org/x/net/html"
+	"os"
 	"strings"
 	"testing"
 )
@@ -17,6 +18,18 @@ const testIndexHTML = `
 <body>
 	<p>Test</p>
 </body>`
+
+func TestCleanUpFiles(t *testing.T) {
+	if err := os.MkdirAll("files/test", 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	cleanUpFiles("test")
+
+	if _, err := os.Stat("files/test"); !os.IsNotExist(err) {
+		t.Fatal("Directory must not exist anymore")
+	}
+}
 
 func TestFindLinkIconNodes(t *testing.T) {
 	doc, err := html.Parse(strings.NewReader(testIndexHTML))

@@ -1,17 +1,43 @@
 package favicon
 
-import "testing"
+import (
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+)
 
-func TestGetFilenameForSize(t *testing.T) {
-	if o := getFilenameForSize("foo.png", 12); o != "foo-16.png" {
-		t.Fatalf("Filename with minimum size must have been returned, but was: %v", o)
+func TestServeFaviconBadRequest(t *testing.T) {
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "/", nil)
+	ServeFavicon(w, r)
+
+	if w.Result().StatusCode != http.StatusBadRequest {
+		t.Fatal("Request must return a bad request status code")
 	}
 
-	if o := getFilenameForSize("foo.png", 1218); o != "foo-196.png" {
-		t.Fatalf("Filename with maximum size must have been returned, but was: %v", o)
+	body, _ := ioutil.ReadAll(w.Body)
+
+	if !strings.Contains(string(body), "provide a valid URL or hostname") ||
+		strings.Contains(string(body), "provide a number greater or equal to 0") {
+		t.Fatalf("Body must contain an error message, but was: %v", string(body))
+	}
+}
+
+func TestServeFaviconBadRequestSize(t *testing.T) {
+	w := httptest.NewRecorder()
+	r, _ := http.NewRequest(http.MethodGet, "/?url=example.com&size=asdf", nil)
+	ServeFavicon(w, r)
+
+	if w.Result().StatusCode != http.StatusBadRequest {
+		t.Fatal("Request must return a bad request status code")
 	}
 
-	if o := getFilenameForSize("foo.png", 64); o != "foo-64.png" {
-		t.Fatalf("Filename with exact size must have been returned, but was: %v", o)
+	body, _ := ioutil.ReadAll(w.Body)
+
+	if !strings.Contains(string(body), "provide a valid URL or hostname") ||
+		!strings.Contains(string(body), "provide a number greater or equal to 0") {
+		t.Fatalf("Body must contain an error message, but was: %v", string(body))
 	}
 }

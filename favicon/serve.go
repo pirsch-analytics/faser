@@ -1,12 +1,16 @@
 package favicon
 
 import (
+	"encoding/json"
+	"github.com/emvi/logbuch"
 	"github.com/pirsch-analytics/faser/db"
 	"github.com/pirsch-analytics/faser/server"
 	"net/http"
-	"path"
+	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
+	"syscall"
 	"time"
 )
 
@@ -22,10 +26,16 @@ var sizes = []int{
 // ServeFavicon looks up a favicon and serves the file in the desired dimensions if possible or the default icon otherwise.
 func ServeFavicon(w http.ResponseWriter, r *http.Request) {
 	hostname := getHostname(r.URL.Query().Get("url"))
-	size, _ := strconv.Atoi(r.URL.Query().Get("size"))
+	sizeParam := strings.TrimSpace(r.URL.Query().Get("size"))
+	var size int
+	var err error
 
-	if hostname == "" {
-		serveDefaultFavicon(w, r)
+	if sizeParam != "" {
+		size, err = strconv.Atoi(sizeParam)
+	}
+
+	if hostname == "" || err != nil {
+		sendBadRequest(w, err != nil)
 		return
 	}
 
@@ -41,31 +51,45 @@ func ServeFavicon(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filename := getFilenameForSize(domain.Filename.String, size)
-	http.ServeFile(w, r, filepath.Join(filesDir, hostname, filename))
+	filename, size := selectFilenameForSize(domain.Filename.String, size)
+	filePath := filepath.Join(filesDir, hostname, filename)
+	_, err = os.Stat(filePath)
+
+	if size != 0 && os.IsNotExist(err) {
+		if err := scale(hostname, filename, size); err != nil {
+			serveDefaultFavicon(w, r)
+			return
+		}
+	}
+
+	http.ServeFile(w, r, filePath)
+}
+
+func sendBadRequest(w http.ResponseWriter, sizeErr bool) {
+	w.WriteHeader(http.StatusBadRequest)
+	resp := struct {
+		URL  string `json:"url"`
+		Size string `json:"size,omitempty"`
+	}{
+		URL: "provide a valid URL or hostname",
+	}
+
+	if sizeErr {
+		resp.Size = "provide a number greater or equal to 0"
+	}
+
+	respBody, err := json.Marshal(&resp)
+
+	if err != nil {
+		logbuch.Error("Error encoding error response", logbuch.Fields{"err": err})
+		return
+	}
+
+	if _, err := w.Write(respBody); err != nil && err != syscall.EPIPE {
+		logbuch.Warn("Error sending error response", logbuch.Fields{"err": err})
+	}
 }
 
 func serveDefaultFavicon(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, server.Config().DefaultFavicon)
-}
-
-func getFilenameForSize(filename string, size int) string {
-	if size <= 0 {
-		return filename
-	}
-
-	for _, s := range sizes {
-		if size <= s {
-			size = s
-			break
-		}
-	}
-
-	if size > sizes[len(sizes)-1] {
-		size = sizes[len(sizes)-1]
-	}
-
-	ext := path.Ext(filename)
-	filenameWithoutExt := filename[:len(filename)-len(ext)]
-	return filenameWithoutExt + "-" + strconv.Itoa(size) + ext
 }
