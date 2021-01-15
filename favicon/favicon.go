@@ -135,18 +135,18 @@ func hasRelAttribute(node *html.Node) bool {
 
 func findLargestIconNode(nodes []html.Node) *html.Node {
 	width := 0
-	var largest *html.Node
+	var largest html.Node
 
 	for _, n := range nodes {
 		w := getSizesWidth(&n)
 
 		if w >= width {
 			width = w
-			largest = &n
+			largest = n
 		}
 	}
 
-	return largest
+	return &largest
 }
 
 func getSizesWidth(node *html.Node) int {
