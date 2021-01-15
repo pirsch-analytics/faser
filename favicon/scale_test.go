@@ -7,24 +7,6 @@ import (
 	"testing"
 )
 
-func TestSelectFilenameForSize(t *testing.T) {
-	if o, s := selectFilenameForSize("foo.png", 12); o != "foo-16.png" || s != 16 {
-		t.Fatalf("Filename with minimum size must have been returned, but was: %v %v", o, s)
-	}
-
-	if o, s := selectFilenameForSize("foo.PNG", 1218); o != "foo-196.png" || s != 196 {
-		t.Fatalf("Filename with maximum size must have been returned, but was: %v %v", o, s)
-	}
-
-	if o, s := selectFilenameForSize("foo.png", 64); o != "foo-64.png" || s != 64 {
-		t.Fatalf("Filename with exact size must have been returned, but was: %v %v", o, s)
-	}
-
-	if o, s := selectFilenameForSize("foo.svg", 64); o != "foo.svg" || s != 0 {
-		t.Fatalf("Original filename must have been returned, but was: %v %v", o, s)
-	}
-}
-
 func TestScale(t *testing.T) {
 	if err := os.MkdirAll("files/hostname", 0744); err != nil {
 		t.Fatal(err)

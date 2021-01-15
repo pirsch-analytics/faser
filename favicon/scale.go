@@ -21,6 +21,7 @@ var sizes = []int{
 }
 
 func scale(hostname, filename string, size int) string {
+	size = getValidSize(size)
 	dir := server.Config().Cache.Dir
 	srcPath := filepath.Join(dir, hostname, filename)
 	newFilename := getFilenameForSize(filename, size)
@@ -45,21 +46,6 @@ func scale(hostname, filename string, size int) string {
 	}
 
 	return newFilename
-}
-
-func selectFilenameForSize(filename string, size int) (string, int) {
-	if size <= 0 {
-		return filename, 0
-	}
-
-	ext := strings.ToLower(path.Ext(filename))
-
-	if !scalableType(ext) {
-		return filename, 0
-	}
-
-	size = getValidSize(size)
-	return getFilenameForSize(filename, size), size
 }
 
 func getFilenameForSize(filename string, size int) string {

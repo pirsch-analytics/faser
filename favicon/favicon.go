@@ -44,17 +44,6 @@ func downloadFavicon(hostname string) string {
 	return filename
 }
 
-func cleanUpFiles(hostname string) {
-	logbuch.Debug("Cleaning up files", logbuch.Fields{"hostname": hostname})
-
-	if err := os.RemoveAll(filepath.Join(server.Config().Cache.Dir, hostname)); err != nil {
-		logbuch.Error("Error deleting directory for host", logbuch.Fields{
-			"err":      err,
-			"hostname": hostname,
-		})
-	}
-}
-
 func lookupIndex(hostname string) (string, error) {
 	resp, err := http.Get("http://" + hostname)
 
