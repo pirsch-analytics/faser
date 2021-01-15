@@ -25,9 +25,11 @@ func downloadFavicon(hostname string) string {
 			"err":      err,
 			"hostname": hostname,
 		})
+	}
 
-		// fallback to favicon.ico
-		iconURL = filepath.Join(hostname, "favicon.ico")
+	// fallback to favicon.ico
+	if iconURL == "" {
+		iconURL = "favicon.ico"
 	}
 
 	filename, err := downloadIcon(iconURL, hostname)
