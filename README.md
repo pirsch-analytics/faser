@@ -33,7 +33,7 @@ Once you have the server up and running, you can make a request to it:
 example.com/?url=github.com&size=64
 ```
 
-This request will return the favicon for `github.com` scaled to a maximum of 64px width and height. The `size` parameter is optional. If you don't provide it, the maximum size will be returned. Make sure you sure you still set the maximum sizes on your end, as the favicon might not have the exact size you specified (if it's a svg for example).
+This request will return the favicon for `github.com` scaled to a maximum of 64px width and height. The `size` parameter is optional. If you don't provide it, the maximum size will be returned. Make sure that you still set the maximum sizes on your end, as the favicon might not have the exact size you specified (if it's a svg for example).
 
 ## Changelog
 
