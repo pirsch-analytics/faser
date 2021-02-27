@@ -1,7 +1,6 @@
 package favicon
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -46,13 +45,13 @@ func TestScale(t *testing.T) {
 }
 
 func copyFile(t *testing.T, src, target string) {
-	data, err := ioutil.ReadFile(src)
+	data, err := os.ReadFile(src)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if err := ioutil.WriteFile(target, data, 0744); err != nil {
+	if err := os.WriteFile(target, data, 0744); err != nil {
 		t.Fatal(err)
 	}
 }

@@ -1,7 +1,7 @@
 package favicon
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -17,7 +17,7 @@ func TestServeFaviconBadRequest(t *testing.T) {
 		t.Fatal("Request must return a bad request status code")
 	}
 
-	body, _ := ioutil.ReadAll(w.Body)
+	body, _ := io.ReadAll(w.Body)
 
 	if !strings.Contains(string(body), "provide a valid URL or hostname") ||
 		strings.Contains(string(body), "provide a number greater or equal to 0") {
@@ -34,7 +34,7 @@ func TestServeFaviconBadRequestSize(t *testing.T) {
 		t.Fatal("Request must return a bad request status code")
 	}
 
-	body, _ := ioutil.ReadAll(w.Body)
+	body, _ := io.ReadAll(w.Body)
 
 	if !strings.Contains(string(body), "provide a valid URL or hostname") ||
 		!strings.Contains(string(body), "provide a number greater or equal to 0") {

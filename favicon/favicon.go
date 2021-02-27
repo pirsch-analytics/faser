@@ -6,7 +6,7 @@ import (
 	"github.com/emvi/logbuch"
 	"github.com/pirsch-analytics/faser/server"
 	"golang.org/x/net/html"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -190,7 +190,7 @@ func downloadIcon(rawurl, hostname string) (string, error) {
 		return "", fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	file, err := ioutil.ReadAll(resp.Body)
+	file, err := io.ReadAll(resp.Body)
 
 	if err != nil {
 		return "", err
@@ -207,7 +207,7 @@ func downloadIcon(rawurl, hostname string) (string, error) {
 	filename = "favicon" + ext
 	p := filepath.Join(dir, hostname, filename)
 
-	if err := ioutil.WriteFile(p, file, 0644); err != nil {
+	if err := os.WriteFile(p, file, 0644); err != nil {
 		return "", err
 	}
 
