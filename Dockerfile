@@ -7,7 +7,8 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" /go/src/faser/main.go && \
 	mkdir -p /app/data && \
 	mv /go/src/faser/main /app/server && \
-	mv /go/src/faser/default.svg /app/data/favicon.svg
+	mv /go/src/faser/default.svg /app/data/favicon.svg && \
+	mv /go/src/faser/default-white.svg /app/data/favicon-white.svg
 
 FROM alpine
 RUN apk update && \
@@ -23,6 +24,7 @@ ENV FASER_CORS_ORIGINS=*
 ENV FASER_SERVER_HOST=:8080
 ENV FASER_CACHE_DIR=/app/data/files
 ENV FASER_DEFAULT_FAVICON=/app/data/favicon.svg
+ENV FASER_DEFAULT_FAVICON_DIR=/app/data
 
 EXPOSE 8080
 VOLUME ["/app/data"]

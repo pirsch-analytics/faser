@@ -16,6 +16,7 @@ Please see the [docker-compose.yml](docker-compose.yml) for reference. You can s
 | FASER_CACHE_MAX_AGE | Sets the maximum time a favicon will be cached (in seconds). |
 | FASER_CACHE_MAX_ENTRIES | Sets the maximum number of favicons stored (not including scaled images). |
 | FASER_DEFAULT_FAVICON | Sets the default favicon path. `/app/data/favicon.svg` inside the container volume. |
+| FASER_DEFAULT_FAVICON_DIR | Sets the fallback favicon path. `/app/data` inside the container volume. |
 | FASER_CORS_LOG_LEVEL | debug, info |
 | FASER_CORS_ORIGINS | Sets the allowed origins (`*` by default). |
 | FASER_SERVER_HOST | Sets the host ip:port (`:8080` by default). |
@@ -34,6 +35,12 @@ example.com/?url=github.com&size=64
 ```
 
 This request will return the favicon for `github.com` scaled to a maximum of 64px width and height. The `size` parameter is optional. If you don't provide it, the maximum size will be returned. Make sure that you still set the maximum sizes on your end, as the favicon might not have the exact size you specified (if it's a svg for example).
+
+In case the favicon cannot be downloaded, the default favicon is returned. You can also select a favicon if you know its filename by adding the `fallback` query parameter.
+
+```
+example.com/?url=github.com&size=64&fallback=my-favicon.svg
+```
 
 ## Changelog
 

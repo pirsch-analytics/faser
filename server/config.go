@@ -16,10 +16,11 @@ type config struct {
 }
 
 type cacheConfig struct {
-	Dir            string
-	MaxAge         int
-	MaxEntries     int
-	DefaultFavicon string
+	Dir               string
+	MaxAge            int
+	MaxEntries        int
+	DefaultFavicon    string
+	DefaultFaviconDir string
 }
 
 type corsConfig struct {
@@ -42,6 +43,7 @@ func LoadConfig() {
 	cacheMaxAge, _ := strconv.Atoi(os.Getenv("FASER_CACHE_MAX_AGE"))
 	cacheMaxEntries, _ := strconv.Atoi(os.Getenv("FASER_CACHE_MAX_ENTRIES"))
 	defaultFavicon := os.Getenv("FASER_DEFAULT_FAVICON")
+	defaultFaviconDir := os.Getenv("FASER_DEFAULT_FAVICON_DIR")
 	writeTimeout, _ := strconv.Atoi(os.Getenv("FASER_SERVER_WRITE_TIMEOUT"))
 	readTimeout, _ := strconv.Atoi(os.Getenv("FASER_SERVER_READ_TIMEOUT"))
 
@@ -61,6 +63,10 @@ func LoadConfig() {
 		defaultFavicon = "default.svg"
 	}
 
+	if defaultFaviconDir == "" {
+		defaultFaviconDir = "."
+	}
+
 	if writeTimeout <= 0 {
 		writeTimeout = 5
 	}
@@ -72,10 +78,11 @@ func LoadConfig() {
 	cfg = &config{
 		LogLevel: strings.ToLower(os.Getenv("FASER_LOG_LEVEL")),
 		Cache: cacheConfig{
-			Dir:            cacheDir,
-			MaxAge:         cacheMaxAge,
-			MaxEntries:     cacheMaxEntries,
-			DefaultFavicon: defaultFavicon,
+			Dir:               cacheDir,
+			MaxAge:            cacheMaxAge,
+			MaxEntries:        cacheMaxEntries,
+			DefaultFavicon:    defaultFavicon,
+			DefaultFaviconDir: defaultFaviconDir,
 		},
 		Cors: corsConfig{
 			LogLevel: strings.ToLower(os.Getenv("FASER_CORS_LOG_LEVEL")),

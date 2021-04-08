@@ -15,6 +15,7 @@ import (
 func ServeFavicon(w http.ResponseWriter, r *http.Request) {
 	hostname := getHostname(r.URL.Query().Get("url"))
 	sizeParam := strings.TrimSpace(r.URL.Query().Get("size"))
+	fallback := strings.TrimSpace(r.URL.Query().Get("fallback"))
 	var size int
 	var err error
 
@@ -30,7 +31,7 @@ func ServeFavicon(w http.ResponseWriter, r *http.Request) {
 	filename := faviconCache.find(hostname, size)
 
 	if filename == "" {
-		serveDefaultFavicon(w, r)
+		serveDefaultFavicon(w, r, fallback)
 		return
 	}
 
@@ -62,6 +63,10 @@ func sendBadRequest(w http.ResponseWriter, sizeErr bool) {
 	}
 }
 
-func serveDefaultFavicon(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, server.Config().Cache.DefaultFavicon)
+func serveDefaultFavicon(w http.ResponseWriter, r *http.Request, fallback string) {
+	if fallback == "" {
+		http.ServeFile(w, r, server.Config().Cache.DefaultFavicon)
+	} else {
+		http.ServeFile(w, r, filepath.Join(server.Config().Cache.DefaultFaviconDir, filepath.Base(fallback)))
+	}
 }

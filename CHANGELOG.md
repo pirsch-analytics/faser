@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0
+
+* select a specific default icon (new optional `fallback` parameter)
+* updated dependencies
+
 ## 1.1.0
 
 * removed deprecated package io/ioutil, the minimum Go version is now 1.16

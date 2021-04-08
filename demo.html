@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>Demo</title>
     <style type="text/css">
+        body {
+            background: #c0c0c0;
+        }
+
         img {
             width: 32px;
             height: 32px;
@@ -21,5 +25,9 @@
     <p>producthunt.com</p>
     <img src="http://localhost:8080/?size=32&url=https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
     <p>youtube.com</p>
+    <img src="http://localhost:8080/?size=32&url=https://this-should-not-exist" />
+    <p>fallback to default</p>
+    <img src="http://localhost:8080/?size=32&url=https://this-should-not-exist&fallback=default-white.svg" />
+    <p>select fallback icon</p>
 </body>
 </html>
