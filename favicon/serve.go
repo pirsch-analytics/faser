@@ -23,6 +23,8 @@ func ServeFavicon(w http.ResponseWriter, r *http.Request) {
 		size, err = strconv.Atoi(sizeParam)
 	}
 
+	setResponseHeaders(w, hostname)
+
 	if hostname == "" || err != nil {
 		sendBadRequest(w, err != nil)
 		return
@@ -36,6 +38,12 @@ func ServeFavicon(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.ServeFile(w, r, filepath.Join(server.Config().Cache.Dir, hostname, filename))
+}
+
+func setResponseHeaders(w http.ResponseWriter, etag string) {
+	w.Header().Add("Permissions-Policy", "interest-cohort=()")
+	w.Header().Add("Cache-Control", "max-age=31536000")
+	w.Header().Add("ETag", etag)
 }
 
 func sendBadRequest(w http.ResponseWriter, sizeErr bool) {

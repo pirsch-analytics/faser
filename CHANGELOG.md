@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+* use caching headers to serve icons
+* opt out of Google's FLoC
+* updated dependencies
+
 ## 1.2.0
 
 * select a specific default icon (new optional `fallback` parameter)
