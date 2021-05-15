@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+* respond with default icon to "bad" requests (like keywords instead of a valid URL)
+
 ## 1.2.1
 
 * use caching headers to serve icons

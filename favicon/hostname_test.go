@@ -9,6 +9,7 @@ func TestGetHostname(t *testing.T) {
 		"https://example.com",
 		"https://www.example.com",
 		"example",
+		"key words",
 		"",
 	}
 	out := []string{
@@ -17,6 +18,7 @@ func TestGetHostname(t *testing.T) {
 		"example.com",
 		"www.example.com",
 		"example",
+		"",
 		"",
 	}
 
