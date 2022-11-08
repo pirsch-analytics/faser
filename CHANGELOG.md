@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0
+
+* updated dependencies
+
 ## 1.3.0
 
 * respond with default icon to "bad" requests (like keywords instead of a valid URL)
