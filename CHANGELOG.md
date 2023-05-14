@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.0
+
+* switched to Chi router
+* improved CORS settings
+* only allow GET requests
+* updated dependencies
+* upgraded to Go 1.20
+
 ## 1.4.0
 
 * updated dependencies

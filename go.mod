@@ -1,10 +1,10 @@
 module github.com/pirsch-analytics/faser
 
-go 1.16
+go 1.20
 
 require (
 	github.com/emvi/logbuch v1.2.0
-	github.com/gorilla/mux v1.8.0
-	github.com/rs/cors v1.8.2
-	golang.org/x/net v0.1.0
+	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/cors v1.2.1
+	golang.org/x/net v0.10.0
 )
