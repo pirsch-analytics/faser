@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.0
+
+* refactored project
+* added Makefile
+* added vendor directory
+* updated dependencies
+* upgraded to Go 1.22
+
 ## 1.5.0
 
 * switched to Chi router

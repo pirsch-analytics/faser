@@ -4,33 +4,72 @@
     <meta charset="UTF-8">
     <title>Demo</title>
     <style type="text/css">
-        body {
-            background: #c0c0c0;
-        }
-
         img {
             width: 32px;
             height: 32px;
         }
+
+        div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 5px;
+            border: 1px solid #c0c0c0;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            background: #c0c0c0;
+        }
+
+        div:hover {
+            background: #fff;
+        }
+
+        body {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            padding: 80px;
+        }
     </style>
 </head>
 <body>
-    <img src="http://localhost:8080/?url=pirsch.io&size=32" />
-    <p>pirsch.io</p>
-    <img src="http://localhost:8080/?url=google.com&size=32" />
-    <p>google.com</p>
-    <img src="http://localhost:8080/?url=github.com&size=32" />
-    <p>github.com</p>
-    <img src="http://localhost:8080/?url=producthunt.com&size=192" />
-    <p>Keywords</p>
-    <img src="http://localhost:8080/?url=key+words" />
-    <img src="http://localhost:8080/?url=key%20words&fallback=default-white.svg" />
-    <p>producthunt.com</p>
-    <img src="http://localhost:8080/?size=32&url=https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
-    <p>youtube.com</p>
-    <img src="http://localhost:8080/?size=32&url=https://this-should-not-exist" />
-    <p>fallback to default</p>
-    <img src="http://localhost:8080/?size=32&url=https://this-should-not-exist&fallback=default-white.svg" />
-    <p>select fallback icon</p>
+    <div>
+        <img src="http://localhost:8080/?url=pirsch.io&size=32" />
+        <p>pirsch.io</p>
+    </div>
+    <div>
+        <img src="http://localhost:8080/?url=google.com&size=32" />
+        <p>google.com</p>
+    </div>
+    <div>
+        <img src="http://localhost:8080/?url=github.com&size=32" />
+        <p>github.com</p>
+    </div>
+    <div>
+        <img src="http://localhost:8080/?url=producthunt.com&size=192" />
+        <p>producthunt.com</p>
+    </div>
+    <div>
+        <img src="http://localhost:8080/?size=32&url=https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
+        <p>youtube.com</p>
+    </div>
+    <div>
+        <img src="http://localhost:8080/?url=key+words" />
+        <p>Keywords</p>
+    </div>
+    <div>
+        <img src="http://localhost:8080/?url=key%20words&fallback=default-white.svg" />
+        <p>Keywords (white)</p>
+    </div>
+    <div>
+        <img src="http://localhost:8080/?size=32&url=https://this-should-not-exist" />
+        <p>Fallback</p>
+    </div>
+    <div>
+        <img src="http://localhost:8080/?size=32&url=https://this-should-not-exist&fallback=default-white.svg" />
+        <p>Fallback (white)</p>
+    </div>
 </body>
 </html>
