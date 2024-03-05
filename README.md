@@ -15,7 +15,7 @@ Please see the [docker-compose.yml](docker-compose.yml) for reference. You can s
 | FASER_CACHE_DIR            | Sets the favicon cache directory. `/app/cache` inside the container volume. |
 | FASER_CACHE_MAX_AGE        | Sets the maximum time a favicon will be cached (in seconds).                |
 | FASER_CACHE_MAX_ENTRIES    | Sets the maximum number of favicons stored (not including scaled images).   |
-| FASER_DEFAULT_FAVICON      | Sets the default favicon path. `favicon.svg` inside the container volume.   |
+| FASER_DEFAULT_FAVICON      | Sets the default favicon path. `default.svg` inside the container volume.   |
 | FASER_DEFAULT_FAVICON_DIR  | Sets the fallback favicon path. `/app/static` inside the container volume.  |
 | FASER_CORS_LOG_LEVEL       | debug, info                                                                 |
 | FASER_CORS_ORIGINS         | Sets the allowed origins (`*` by default).                                  |
@@ -51,7 +51,7 @@ services:
   faser:
     image: pirsch/faser
     container_name: faser
-    restart: always
+    restart: unless-stopped
     ports:
       - "8080:8080"
     volumes:

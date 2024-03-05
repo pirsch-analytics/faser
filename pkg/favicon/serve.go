@@ -1,6 +1,7 @@
 package favicon
 
 import (
+	"github.com/emvi/logbuch"
 	"github.com/pirsch-analytics/faser/pkg/server"
 	"net/http"
 	"path/filepath"
@@ -44,8 +45,10 @@ func setResponseHeaders(w http.ResponseWriter, etag string) {
 
 func serveDefaultFavicon(w http.ResponseWriter, r *http.Request, fallback string) {
 	if fallback == "" {
+		logbuch.Info("Serving fallback icon", logbuch.Fields{"path": filepath.Join(server.Config().Cache.DefaultFaviconDir, server.Config().Cache.DefaultFavicon)})
 		http.ServeFile(w, r, filepath.Join(server.Config().Cache.DefaultFaviconDir, server.Config().Cache.DefaultFavicon))
 	} else {
+		logbuch.Info("Serving fallback icon", logbuch.Fields{"path": filepath.Join(server.Config().Cache.DefaultFaviconDir, filepath.Base(fallback))})
 		http.ServeFile(w, r, filepath.Join(server.Config().Cache.DefaultFaviconDir, filepath.Base(fallback)))
 	}
 }
