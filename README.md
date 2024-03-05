@@ -7,7 +7,7 @@ Faser (*fa*vicon *ser*ver) is a self-hosted, cached favicon server that returns 
 
 ## Installation
 
-Please see the [docker-compose.yml](docker-compose.yml) for reference. You can set the following environment variables:
+Please see the docker-compose.yml example below for reference. You can set the following environment variables:
 
 | Variable                   | Description                                                                 |
 |----------------------------|-----------------------------------------------------------------------------|
