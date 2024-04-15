@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.6.1
+
+* improved logging
+* updated dependencies
+
 ## 1.6.0
 
 * refactored project
