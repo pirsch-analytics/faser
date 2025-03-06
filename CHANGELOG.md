@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.0
+
+* upgraded to Go version 1.24
+* updated dependencies
+
 ## 1.6.1
 
 * improved logging

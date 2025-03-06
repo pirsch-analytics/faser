@@ -1,7 +1,7 @@
 .PHONY: dev test deps release
 
 dev:
-	FASER_LOG_LEVEL=debug FASER_CORS_ORIGINS=* FASER_SERVER_HOST=localhost:8080 go run cmd/main.go
+	FASER_LOG_LEVEL=debug FASER_CORS_ORIGINS=* FASER_SERVER_HOST=localhost:8080 go run cmd/faser/main.go
 
 test:
 	go test -cover -race github.com/pirsch-analytics/faser/pkg/...

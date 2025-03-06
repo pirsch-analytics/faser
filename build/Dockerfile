@@ -4,7 +4,7 @@ RUN apt-get update && \
 WORKDIR /go/src/faser
 COPY .. .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" /go/src/faser/cmd/main.go && \
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-s -w" /go/src/faser/cmd/faser/main.go && \
 	mkdir -p /app/data && \
 	mv /go/src/faser/main /app/server && \
 	mv /go/src/faser/static /app/static
