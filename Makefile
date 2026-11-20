@@ -1,4 +1,4 @@
-.PHONY: dev test deps release
+.PHONY: dev test deps docker
 
 dev:
 	FASER_LOG_LEVEL=debug FASER_CORS_ORIGINS=* FASER_SERVER_HOST=localhost:8080 go run cmd/faser/main.go
